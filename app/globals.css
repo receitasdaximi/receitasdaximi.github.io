@@ -1,42 +1,25 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+html, body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    margin: 10px 0 5px 0;
+    font-size: 18pt;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.indexPage img {
+    width: 100%;
+    height: 400px;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+.indexButton {
+    height: 150px;
+    font-weight: bold;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+ul {
+    text-decoration: none;
+    list-style: none;
+    margin-left: -15px;
 }
