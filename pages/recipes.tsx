@@ -1,7 +1,15 @@
 import { Recipe } from "@/app/Types/Recipe";
 import Link from "next/link";
+import Database from "@/services/database";
+import { useEffect } from "react";
 
 export default function Recipes() {
+    const database = Database();
+    useEffect(() => {
+        let recipesQuery = database.getAll();
+        if (recipesQuery)
+            recipes = recipesQuery;
+    });
     let recipes: Recipe[] = [
         {
             id: 0, 
