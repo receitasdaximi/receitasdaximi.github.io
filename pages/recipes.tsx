@@ -1,35 +1,48 @@
-import { Recipe } from "@/app/Types/Recipe";
+import Recipe from "@/app/Types/Recipe";
 import Link from "next/link";
 import Database from "@/services/database";
 import { useEffect } from "react";
 
 export default function Recipes() {
-    const database = Database();
-    useEffect(() => {
-        let recipesQuery = database.getAll();
+    const database = new Database();
+        //TODO acertar com useState
+
+    async function fetchData() {
+        const recipesQuery = database.getAll();
+
+        console.log(recipesQuery);
+        recipesQuery.then((value) => {console.log(value)});
         if (recipesQuery)
-            recipes = recipesQuery;
+            recipes = await recipesQuery;
+
+        console.log(recipes);
+        
+    }
+
+    useEffect(() => {
+        
+        fetchData();
     });
     let recipes: Recipe[] = [
         {
             id: 0, 
             name: 'topoki',
             recipePicture: 'foto', 
-            ingredients: ['agua', 'arroz'],
+            ingredients: 'agua',
             howToPrepare: 'coloca arroz na agua'
         },
         {
             id: 1,  
             name: 'topoki',
             recipePicture: 'foto', 
-            ingredients: ['agua', 'arroz'],
+            ingredients: 'agua',
             howToPrepare: 'coloca arroz na agua'
         },
         {
             id: 2,  
             name: 'topoki',
             recipePicture: 'foto', 
-            ingredients: ['agua', 'arroz'],
+            ingredients: 'agua',
             howToPrepare: 'coloca arroz na agua'
         },
     ];

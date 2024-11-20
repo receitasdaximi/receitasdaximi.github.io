@@ -1,7 +1,7 @@
-export type Recipe = {
-    id: number;
-    name: string;
-    recipePicture: string;
-    ingredients: string[];
-    howToPrepare: string;
+export default class Recipe {
+    id: number = -1;
+    name: string = '';
+    recipePicture: string = '';
+    ingredients: string = '';
+    howToPrepare: string = '';
 };

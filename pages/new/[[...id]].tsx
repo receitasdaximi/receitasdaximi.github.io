@@ -1,20 +1,21 @@
 import { FormEvent } from "react";
 import { useRouter } from 'next/router'
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Database from "@/services/database";
-import { Recipe } from "@/app/Types/Recipe";
+import Recipe from "@/app/Types/Recipe";
 
 export default function New() {
     const router = useRouter();
-    const database = new Database();
-    let recipe: Recipe = {
+    const database = useMemo(() =>  new Database(), []);
+    const [recipe, setRecipe] = useState<Recipe>({
         id: -1,
-        name: '',
-        recipePicture: '',
-        ingredients: [''],
-        howToPrepare: ''
-    };
+        name: 'teste',
+        recipePicture: '123',
+        ingredients: '123',
+        howToPrepare: '123',
+    });
 
+    //TODO acertar com useState
     useEffect(()=> {
         if (typeof(router.query.id) != 'string')
             return;
@@ -24,18 +25,22 @@ export default function New() {
         if (!recipeId)
             return;
         
-        const recipeQuery = database.getById(recipeId);
+        const recipeQuery: Recipe = database.getById(recipeId);
         
         if (recipeQuery == undefined)
             return;
 
-        recipe = recipeQuery;
+        setRecipe(recipeQuery);
         
 
-    });
+    }, [router.query.id, database]);
     
     function onSubmit(event: FormEvent) {
         event.preventDefault();
+        if (recipe === undefined)
+            return;
+
+        database.create(recipe);
         return;
     }
 
@@ -45,7 +50,20 @@ export default function New() {
             <form onSubmit={(e) =>onSubmit(e)} className="form">
                 <div className="form-input mb-3">
                     <label htmlFor="recipe-name" className="form-label">Nome da Receita</label>
-                    <input required type="text" id="recipe-name" className="form-control" value={recipe.name} onChange={() => console.log(recipe.name)} />
+                    <input required type="text" id="recipe-name" className="form-control" value={recipe.name} onChange={
+                        (e) => {
+                            setRecipe(
+                                {
+                                    id: recipe? recipe.id : -1,
+                                    name: e.target.value,
+                                    recipePicture: recipe? recipe.recipePicture : '',
+                                    ingredients: recipe? recipe.ingredients: '',
+                                    howToPrepare: recipe? recipe.howToPrepare: '',
+                                });
+                            console.log(recipe?.name);
+                            }
+                        } 
+                    />
                 </div>
                 <div className="form-input mb-3">
                     <label htmlFor="recipe-image" className="form-label">Foto da Receita</label>
