@@ -1,7 +1,7 @@
 export default class Recipe {
-    id: number = -1;
-    name: string = '';
-    recipePicture: string = '';
-    ingredients: string = '';
-    howToPrepare: string = '';
+    public id?: number;
+    public name: string = '';
+    public recipePicture: string = '';
+    public ingredients: string = '';
+    public howToPrepare: string = '';
 };

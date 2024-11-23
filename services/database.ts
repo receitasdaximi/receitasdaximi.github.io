@@ -6,15 +6,12 @@ const objectStoreName = "recipes";
 let database: IDBDatabase;
 
 function openDatabase(openRequest: IDBOpenDBRequest) {
-  // const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
-
   openRequest.onupgradeneeded = () => {
     database = openRequest.result;
-
+    console.log('openDatabase:onupgradeneeded');
     if (database.objectStoreNames.contains(objectStoreName)) return;
 
     database.createObjectStore(objectStoreName, {
-      keyPath: "id",
       autoIncrement: true,
     });
   };
@@ -33,6 +30,8 @@ function openDatabase(openRequest: IDBOpenDBRequest) {
 
 function setOnVersionChange() {
   database.onversionchange = () => {
+    console.log("openDatabase:onversionchange");
+
     if (database == null) return;
 
     database.close();
@@ -49,25 +48,29 @@ export default class Database {
   getAll(): Promise<Recipe[]> {
     const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
     openDatabase(openRequest);
-    
+    console.log("get all called");
     return new Promise<Recipe[]>((resolve, reject) => {
-
-      if (database == null) return new Array<Recipe>();
 
       openRequest.onsuccess = () => {
         database = openRequest.result;
-        // const readTransaction = database.transaction(objectStoreName, "readonly");
-        // const readWriteTransaction = database.transaction(objectStoreName, "readwrite");
+        console.log("success openning database");
 
         setOnVersionChange();
         const transaction = database.transaction(objectStoreName);
         const objectStore = transaction.objectStore(objectStoreName);
         const request = objectStore.getAll();
   
+        console.log(`getAll request: ${request}`);
+
         request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
+        request.onsuccess = () => {
+          const result = request.result;
+          let id = 1;
+          result.map((value) => value.id = id++);
+          resolve(result);
+        }
         transaction.oncomplete = () => {
-          console.log(request.result);
+          console.log(`getAll result: ${request.result}`);
           database.close();
         }
 
@@ -76,9 +79,35 @@ export default class Database {
   }
   
   getById(id: number) {
-    if (this.readTransaction == null) return;
+    console.log('getById called');
 
-    return this.readTransaction.objectStore(objectStoreName).get(id).result;
+    const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+    openDatabase(openRequest);
+
+    return new Promise<Recipe>((resolve, reject) => {
+      openRequest.onsuccess = () => {
+        database = openRequest.result;
+        console.log("success openning database");
+
+        setOnVersionChange();
+        const transaction = database.transaction(objectStoreName);
+        const objectStore = transaction.objectStore(objectStoreName);
+        const request = objectStore.get(id);
+
+        console.log(`getAll request: ${request}`);
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const result = request.result;
+          result.id = id;
+          resolve(result);
+        };
+        transaction.oncomplete = () => {
+          console.log(`getAll result: ${request.result}`);
+          database.close();
+        };
+      };
+    });
   }
 
   create(recipe: Recipe) {
@@ -87,13 +116,12 @@ export default class Database {
 
     openRequest.onsuccess = () => {
       database = openRequest.result;
-      // const readTransaction = database.transaction(objectStoreName, "readonly");
-      // const readWriteTransaction = database.transaction(objectStoreName, "readwrite");
 
       setOnVersionChange();
       const transaction = database.transaction(objectStoreName, 'readwrite');
       const objectStore = transaction.objectStore(objectStoreName);
-      const request = objectStore.add(recipe);
+      console.log(`recipe to be saved: ${recipe}`);
+      const request = objectStore.put(recipe);
 
       request.onsuccess = () => console.log("adicionado com sucesso", request.result);
       request.onerror = () => console.log("erro ao adicionar", request.error);

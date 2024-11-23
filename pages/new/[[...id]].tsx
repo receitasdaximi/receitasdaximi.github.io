@@ -8,36 +8,42 @@ export default function New() {
     const router = useRouter();
     const database = useMemo(() =>  new Database(), []);
     const [recipe, setRecipe] = useState<Recipe>({
-        id: -1,
-        name: 'teste',
-        recipePicture: '123',
-        ingredients: '123',
-        howToPrepare: '123',
+        name: '',
+        recipePicture: '',
+        ingredients: '',
+        howToPrepare: '',
     });
 
-    //TODO acertar com useState
     useEffect(()=> {
-        if (typeof(router.query.id) != 'string')
+        if (router.query.id == undefined)
             return;
-
-        const recipeId = parseInt(router.query.id);
+        
+        console.log(`id received: ${router.query.id}`);
+        const recipeId = Number(router.query.id);
 
         if (!recipeId)
             return;
         
-        const recipeQuery: Recipe = database.getById(recipeId);
+        database.getById(recipeId).then(value => {
+            console.log(value);
+    
+            if (value == undefined)
+                return;
+    
+            setRecipe(value);
+        });
         
-        if (recipeQuery == undefined)
-            return;
-
-        setRecipe(recipeQuery);
         
 
     }, [router.query.id, database]);
     
     function onSubmit(event: FormEvent) {
         event.preventDefault();
-        if (recipe === undefined)
+        if (recipe === undefined
+            || recipe.name == ''
+            || recipe.ingredients == ''
+            || recipe.howToPrepare == ''
+        )
             return;
 
         database.create(recipe);
@@ -54,28 +60,51 @@ export default function New() {
                         (e) => {
                             setRecipe(
                                 {
-                                    id: recipe? recipe.id : -1,
+                                    id: recipe.id,
                                     name: e.target.value,
-                                    recipePicture: recipe? recipe.recipePicture : '',
-                                    ingredients: recipe? recipe.ingredients: '',
-                                    howToPrepare: recipe? recipe.howToPrepare: '',
+                                    recipePicture: recipe.recipePicture,
+                                    ingredients: recipe.ingredients,
+                                    howToPrepare: recipe.howToPrepare,
                                 });
-                            console.log(recipe?.name);
                             }
                         } 
                     />
                 </div>
                 <div className="form-input mb-3">
-                    <label htmlFor="recipe-image" className="form-label">Foto da Receita</label>
-                    <input required type="file" accept=".png .jpeg .jpg" id="recipe-image" className="form-control" />
+                    <label htmlFor="recipe-image" className="form-label">Foto da Receita (em breve)</label>
+                    <input required type="file" accept=".png .jpeg .jpg" id="recipe-image" disabled className="form-control" />
                 </div>
                 <div className="form-input mb-3">
                     <label htmlFor="ingredients" className="form-label">Ingredientes</label>
-                    <textarea required id="ingredients" className="form-control" value={recipe.ingredients} />
+                    <textarea required id="ingredients" className="form-control" value={recipe.ingredients} onChange={
+                        (e) => {
+                            setRecipe(
+                                {
+                                    id: recipe.id,
+                                    name: recipe.name,
+                                    recipePicture: recipe.recipePicture,
+                                    ingredients: e.target.value,
+                                    howToPrepare: recipe.howToPrepare,
+                                });
+                            }
+                        } 
+                    />
                 </div>
                 <div className="form-input mb-3">
                     <label htmlFor="how-to-prepare" className="form-label">Modo de Preparo</label>
-                    <textarea required id="how-to-prepare" className="form-control" value={recipe.howToPrepare} />
+                    <textarea required id="how-to-prepare" className="form-control" value={recipe.howToPrepare} onChange={
+                        (e) => {
+                            setRecipe(
+                                {
+                                    id: recipe.id,
+                                    name: recipe.name,
+                                    recipePicture: recipe.recipePicture,
+                                    ingredients: recipe.ingredients,
+                                    howToPrepare: e.target.value,
+                                });
+                            }
+                        } 
+                    />
                 </div>
                 <div className="btn-group">
                     <button className="btn btn-primary" type="submit">Salvar</button>

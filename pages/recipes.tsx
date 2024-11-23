@@ -1,51 +1,25 @@
 import Recipe from "@/app/Types/Recipe";
 import Link from "next/link";
 import Database from "@/services/database";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function Recipes() {
-    const database = new Database();
-        //TODO acertar com useState
+    const database = useMemo(() =>  new Database(), []);
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
 
-    async function fetchData() {
-        const recipesQuery = database.getAll();
-
-        console.log(recipesQuery);
-        recipesQuery.then((value) => {console.log(value)});
-        if (recipesQuery)
-            recipes = await recipesQuery;
-
-        console.log(recipes);
-        
-    }
-
+    
     useEffect(() => {
-        
-        fetchData();
-    });
-    let recipes: Recipe[] = [
-        {
-            id: 0, 
-            name: 'topoki',
-            recipePicture: 'foto', 
-            ingredients: 'agua',
-            howToPrepare: 'coloca arroz na agua'
-        },
-        {
-            id: 1,  
-            name: 'topoki',
-            recipePicture: 'foto', 
-            ingredients: 'agua',
-            howToPrepare: 'coloca arroz na agua'
-        },
-        {
-            id: 2,  
-            name: 'topoki',
-            recipePicture: 'foto', 
-            ingredients: 'agua',
-            howToPrepare: 'coloca arroz na agua'
-        },
-    ];
+        database.getAll().then(value => {
+            
+            console.log(`recipesQuery: ${value}`);
+    
+            if (value == undefined)
+                return;
+    
+            setRecipes(value);
+        });
+    }, [database]);
+
     return(
         <div>
             <h1>Receitas</h1>
