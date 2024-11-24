@@ -51,11 +51,11 @@ export default function New() {
     }
 
     return(
-        <div className="d-flex flex-column text-center">
+        <div className="d-flex flex-column mx-3">
             <p className="h1">Nova Receita</p>
             <form onSubmit={(e) =>onSubmit(e)} className="form">
                 <div className="form-input mb-3">
-                    <label htmlFor="recipe-name" className="form-label">Nome da Receita</label>
+                    <label htmlFor="recipe-name" className="form-label fw-bold">Nome da Receita</label>
                     <input required type="text" id="recipe-name" className="form-control" value={recipe.name} onChange={
                         (e) => {
                             setRecipe(
@@ -71,11 +71,7 @@ export default function New() {
                     />
                 </div>
                 <div className="form-input mb-3">
-                    <label htmlFor="recipe-image" className="form-label">Foto da Receita (em breve)</label>
-                    <input required type="file" accept=".png .jpeg .jpg" id="recipe-image" disabled className="form-control" />
-                </div>
-                <div className="form-input mb-3">
-                    <label htmlFor="ingredients" className="form-label">Ingredientes</label>
+                    <label htmlFor="ingredients" className="form-label fw-bold">Ingredientes</label>
                     <textarea required id="ingredients" className="form-control" value={recipe.ingredients} onChange={
                         (e) => {
                             setRecipe(
@@ -91,7 +87,7 @@ export default function New() {
                     />
                 </div>
                 <div className="form-input mb-3">
-                    <label htmlFor="how-to-prepare" className="form-label">Modo de Preparo</label>
+                    <label htmlFor="how-to-prepare" className="form-label fw-bold">Modo de Preparo</label>
                     <textarea required id="how-to-prepare" className="form-control" value={recipe.howToPrepare} onChange={
                         (e) => {
                             setRecipe(
@@ -105,6 +101,10 @@ export default function New() {
                             }
                         } 
                     />
+                </div>
+                <div className="form-input mb-3">
+                    <label htmlFor="recipe-image" className="form-label fw-bold">Foto da Receita (em breve)</label>
+                    <input required type="file" accept=".png .jpeg .jpg" id="recipe-image" disabled className="form-control" />
                 </div>
                 <div className="btn-group">
                     <button className="btn btn-primary" type="submit">Salvar</button>

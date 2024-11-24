@@ -10,10 +10,10 @@ export default function Home() {
     <div className="d-flex flex-column indexPage">
       <Image src={Logo} alt="Logo"></Image>
         <button 
-          className="btn btn-success indexButton m-2 mt-4" 
+          className="btn btn-info indexButton m-2 mt-4" 
           onClick={() => router.push('/recipes')}>Lista de Receitas</button>
         <button 
-          className="btn btn-success indexButton m-2"
+          className="btn btn-info indexButton m-2"
           onClick={() => router.push('/new')}>Nova Receita</button>
     </div>
   );

@@ -12,6 +12,7 @@ function openDatabase(openRequest: IDBOpenDBRequest) {
     if (database.objectStoreNames.contains(objectStoreName)) return;
 
     database.createObjectStore(objectStoreName, {
+      keyPath: 'id',
       autoIncrement: true,
     });
   };
@@ -41,10 +42,6 @@ function setOnVersionChange() {
 
 export default class Database {
 
-  database: IDBDatabase | undefined;
-  readTransaction: IDBTransaction | undefined;
-  readWriteTransaction: IDBTransaction | undefined;
-
   getAll(): Promise<Recipe[]> {
     const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
     openDatabase(openRequest);
@@ -65,8 +62,6 @@ export default class Database {
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
           const result = request.result;
-          let id = 1;
-          result.map((value) => value.id = id++);
           resolve(result);
         }
         transaction.oncomplete = () => {
@@ -99,7 +94,6 @@ export default class Database {
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
           const result = request.result;
-          result.id = id;
           resolve(result);
         };
         transaction.oncomplete = () => {
@@ -121,6 +115,12 @@ export default class Database {
       const transaction = database.transaction(objectStoreName, 'readwrite');
       const objectStore = transaction.objectStore(objectStoreName);
       console.log(`recipe to be saved: ${recipe}`);
+      
+      if (recipe.id == undefined) {
+        const keyToRemove: keyof Recipe = 'id';
+        delete recipe[keyToRemove]; 
+      }
+
       const request = objectStore.put(recipe);
 
       request.onsuccess = () => console.log("adicionado com sucesso", request.result);
@@ -129,5 +129,23 @@ export default class Database {
     }
   }
 
-  //update(id: number) {}
+  delete(id: number) {
+    const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+    openDatabase(openRequest);
+
+    openRequest.onsuccess = () => {
+      database = openRequest.result;
+
+      setOnVersionChange();
+      const transaction = database.transaction(objectStoreName, "readwrite");
+      const objectStore = transaction.objectStore(objectStoreName);
+      console.log(`recipe id to be deleted: ${id}`);
+      const request = objectStore.delete(id);
+
+      request.onsuccess = () =>
+        console.log("deletado com sucesso", request.result);
+      request.onerror = () => console.log("erro ao deletar", request.error);
+      transaction.oncomplete = () => database.close();
+    };
+  }
 }
