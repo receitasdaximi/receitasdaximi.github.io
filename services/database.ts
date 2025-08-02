@@ -129,6 +129,30 @@ export default class Database {
     }
   }
 
+  async bulkCreate(recipes: Recipe[]): Promise<boolean>  {
+    const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+    openDatabase(openRequest);
+
+    return new Promise<boolean>((resolve, reject) => {
+      openRequest.onsuccess = () => {
+        database = openRequest.result;
+  
+        setOnVersionChange();
+        const transaction = database.transaction(objectStoreName, 'readwrite');
+        const objectStore = transaction.objectStore(objectStoreName);
+        console.log(`recipes to be saved: ${recipes}`);
+        
+        for (const recipe of recipes) {
+          const request = objectStore.put(recipe);
+          request.onsuccess = () => resolve(true);
+          request.onerror = () => reject(request.error);
+        }
+  
+        transaction.oncomplete = () => database.close();
+      }
+    });
+  }
+
   delete(id: number) {
     const openRequest = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
     openDatabase(openRequest);
