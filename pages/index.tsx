@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import Logo from "@/public/receitas_logo.jpeg";
+import Logo from "@/public/receitas_da_ximi.webp";
 import {
   FormEvent,
   FormEventHandler,
@@ -75,7 +75,9 @@ export default function Home() {
 
   return (
     <div className="d-flex flex-column indexPage">
-      <Image src={Logo} alt="Logo" />
+      <Image 
+        src={Logo} 
+        alt="Logo" />
       <button
         className="btn btn-info indexButton m-2 mt-4"
         onClick={() => router.push("/recipes")}
