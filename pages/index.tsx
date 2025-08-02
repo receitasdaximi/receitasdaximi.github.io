@@ -58,7 +58,20 @@ export default function Home() {
     alert("Receitas importadas com sucesso.");
   };
 
-  const handleExportAllButtonClick: MouseEventHandler = async () => {};
+  const handleExportAllButtonClick: MouseEventHandler = async () => {
+    const allRecipes: Recipe[] = await database.getAll();
+    const recipesAsOldRecipe: OldRecipe[] = OldRecipe.ParseFromRecipe(allRecipes);
+    const jsonString = JSON.stringify(recipesAsOldRecipe, null);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "receitas.json"; 
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="d-flex flex-column indexPage">
@@ -88,12 +101,13 @@ export default function Home() {
         <input
           type="file"
           accept="application/JSON"
+          className="form-control"
           onChange={(e) =>
             setFileToImport(e.target.files ? e.target.files[0] : null)
           }
         />
         <button className="btn btn-info indexButton m-2" type="submit">
-          Importar receita
+          Importar receitas
         </button>
       </form>
     </div>
