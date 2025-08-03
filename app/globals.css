@@ -28,3 +28,7 @@ a {
     background-color: #b22222 !important;
     color: white !important;
 }
+
+textarea {
+    field-sizing: content;
+}
