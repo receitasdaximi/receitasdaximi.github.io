@@ -1,16 +1,21 @@
 {
   "name": "ReceitasDaTita",
-  "short_name": "ReceitasDaTita",
+  "short_name": "Receitas Da Tita",
   "description": "App de receitas",
-  "start_url": "/home",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#fff",
   "theme_color": "#fff",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "any",
-      "type": "image/x-icon"
+      "src": "/receitas_da_ximi.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/receitas_da_ximi.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
