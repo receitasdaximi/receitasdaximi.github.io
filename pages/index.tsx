@@ -75,7 +75,7 @@ export default function Home() {
   };
 
   return (
-    <div className="d-flex flex-column indexPage">
+    <div className="d-flex flex-column indexPage mx-auto">
       <Image src={Logo} alt="Logo" />
       <button
         className="btn btn-info indexButton m-2 mt-4"
