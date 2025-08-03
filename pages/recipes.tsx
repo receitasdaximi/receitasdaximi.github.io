@@ -44,7 +44,7 @@ export default function Recipes() {
                         <li className="d-flex justify-content-between align-items-center me-4">
                             <Link 
                                 href={`/new/${recipe.id}`}
-                                className="text-decoration-none fs-4">{recipe.name}</Link>
+                                className="text-decoration-none">{recipe.name}</Link>
                             <button className="btn-close" onClick={() => recipe.id ? deleteFromDb(recipe.id) : ''}></button>
                         </li>
                         <hr className="me-4"/>
