@@ -39,19 +39,20 @@ export default function New() {
       recipe.ingredients == "" ||
       recipe.howToPrepare == ""
     ) {
-        alert("Erro ao exportar receita.");
-        return;
+      alert("Erro ao exportar receita.");
+      return;
     }
 
     const recipeToSave: Recipe[] = [];
     recipeToSave.push(recipe);
-    const recipeAsOldRecipe: OldRecipe[] = OldRecipe.ParseFromRecipe(recipeToSave);
+    const recipeAsOldRecipe: OldRecipe[] =
+      OldRecipe.ParseFromRecipe(recipeToSave);
     const jsonString = JSON.stringify(recipeAsOldRecipe, null);
     const blob = new Blob([jsonString], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `receita_${recipe.name}.json`; 
+    link.download = `receita_${recipe.name}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -65,11 +66,14 @@ export default function New() {
       recipe.name == "" ||
       recipe.ingredients == "" ||
       recipe.howToPrepare == ""
-    )
+    ) {
+      alert("Erro ao salvar receita.");
       return;
+    }
 
     database.create(recipe);
-    return;
+    alert("Receita salva com sucesso!");
+    router.push("/recipes");
   }
 
   return (
@@ -159,9 +163,14 @@ export default function New() {
           </button>
         </div>
       </form>
-      <button className="btn btn-info indexButton m-2 mt-4" onClick={handleExportButtonClick}>
-        Exportar receita
-      </button>
+      {!!router.query.id && (
+        <button
+          className="btn btn-info indexButton mt-4"
+          onClick={handleExportButtonClick}
+        >
+          Exportar receita
+        </button>
+      )}
     </div>
   );
 }
