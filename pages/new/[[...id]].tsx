@@ -4,10 +4,14 @@ import { useEffect, useState, useMemo } from "react";
 import Database from "@/services/database";
 import Recipe from "@/app/Types/Recipe";
 import OldRecipe from "@/app/Types/OldRecipe";
+import ImageDatabase from "@/services/imageDatabase";
+import Image from "next/image";
 
 export default function New() {
   const router = useRouter();
   const database = useMemo(() => new Database(), []);
+  const imageDatabase = useMemo(() => new ImageDatabase(), []);
+  const [recipeImage, setRecipeImage] = useState<Blob | null>(null);
   const [recipe, setRecipe] = useState<Recipe>({
     name: "",
     recipePicture: "",
@@ -24,13 +28,22 @@ export default function New() {
     if (!recipeId) return;
 
     database.getById(recipeId).then((value) => {
-      console.log(value);
+      console.debug("recipe", value);
 
       if (value == undefined) return;
 
       setRecipe(value);
+
+      imageDatabase.getById(value.recipePicture).then((imgBlob) => {
+        if (!imgBlob) {
+          console.debug("failed to get img");
+          return;
+        }
+
+        setRecipeImage(imgBlob);
+      });
     });
-  }, [router.query.id, database]);
+  }, [router.query.id, database, imageDatabase]);
 
   const handleExportButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
     if (
@@ -59,7 +72,7 @@ export default function New() {
     URL.revokeObjectURL(url);
   };
 
-  function onSubmit(event: FormEvent) {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (
       recipe === undefined ||
@@ -71,6 +84,11 @@ export default function New() {
       return;
     }
 
+    if (!!recipeImage) {
+      const imageId = await imageDatabase.create(recipeImage);
+      recipe.recipePicture = imageId;
+    }
+
     database.create(recipe);
     alert("Receita salva com sucesso!");
     router.push("/recipes");
@@ -78,7 +96,18 @@ export default function New() {
 
   return (
     <div className="d-flex flex-column mx-3">
-      <p className="h1">Nova Receita</p>
+      <p className="h1 text-center">
+        {router.query.id ? `${recipe.name}` : "Nova Receita"}
+      </p>
+      {!!recipeImage && (
+        <Image
+          src={URL.createObjectURL(recipeImage)}
+          width={200}
+          height={200}
+          className="align-self-center my-4"
+          alt="RecipeImage"
+        />
+      )}
       <form onSubmit={(e) => onSubmit(e)} className="form">
         <div className="form-input mb-3">
           <label htmlFor="recipe-name" className="form-label fw-bold">
@@ -150,8 +179,16 @@ export default function New() {
             type="file"
             accept=".png .jpeg .jpg"
             id="recipe-image"
-            disabled
             className="form-control"
+            onChange={(e) =>
+              setRecipeImage(
+                e.target.files
+                  ? new Blob([e.target.files[0]], {
+                      type: e.target.files[0].type,
+                    })
+                  : null
+              )
+            }
           />
         </div>
         <div className="btn-group">
