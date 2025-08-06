@@ -172,7 +172,7 @@ export default function New() {
         </div>
         <div className="form-input mb-3">
           <label htmlFor="recipe-image" className="form-label fw-bold">
-            Foto da Receita (em breve)
+            Foto da Receita
           </label>
           <input
             required
